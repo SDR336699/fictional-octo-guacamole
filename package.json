@@ -1,0 +1,14 @@
+{
+  "name": "rent-pro-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm --workspace @rentpro/api run dev",
+    "dev:web": "npm --workspace @rentpro/web run dev",
+    "dev:mobile": "npm --workspace @rentpro/mobile run start",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces"
+  }
+}

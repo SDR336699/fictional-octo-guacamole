@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Language {
+  FR
+  AR
+  EN
+}
+
+enum ContractStatus {
+  DRAFT
+  SIGNED
+}
+
+model Agency {
+  id        String     @id @default(cuid())
+  name      String
+  city      String
+  currency  String     @default("MAD")
+  createdAt DateTime   @default(now())
+  users     User[]
+  customers Customer[]
+  vehicles  Vehicle[]
+  rentals   Rental[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  fullName  String
+  role      String   @default("ADMIN")
+  agencyId  String
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Customer {
+  id             String    @id @default(cuid())
+  firstName      String
+  lastName       String
+  nationalId     String    @unique
+  phone          String
+  email          String?
+  city           String
+  preferredLang  Language  @default(FR)
+  idScanPath     String?
+  idScanText     String?
+  agencyId       String
+  agency         Agency    @relation(fields: [agencyId], references: [id])
+  rentals        Rental[]
+  createdAt      DateTime  @default(now())
+}
+
+model Vehicle {
+  id             String   @id @default(cuid())
+  registrationNo String   @unique
+  brand          String
+  model          String
+  dailyRate      Decimal
+  available      Boolean  @default(true)
+  agencyId       String
+  agency         Agency   @relation(fields: [agencyId], references: [id])
+  rentals        Rental[]
+}
+
+model Rental {
+  id            String         @id @default(cuid())
+  startDate     DateTime
+  endDate       DateTime
+  pickupCity    String
+  dropoffCity   String
+  totalMad      Decimal
+  status        String         @default("RESERVED")
+  customerId    String
+  vehicleId     String
+  agencyId      String
+  customer      Customer       @relation(fields: [customerId], references: [id])
+  vehicle       Vehicle        @relation(fields: [vehicleId], references: [id])
+  agency        Agency         @relation(fields: [agencyId], references: [id])
+  contract      Contract?
+  createdAt     DateTime       @default(now())
+}
+
+model Contract {
+  id             String          @id @default(cuid())
+  rentalId        String          @unique
+  htmlContent     String
+  pdfPath         String?
+  status          ContractStatus  @default(DRAFT)
+  signatureData   String?
+  signedAt        DateTime?
+  rental          Rental          @relation(fields: [rentalId], references: [id])
+  createdAt       DateTime        @default(now())
+}
