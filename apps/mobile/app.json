@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Rent Pro",
+    "slug": "rent-pro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "extra": {
+      "apiUrl": "http://localhost:4000"
+    }
+  }
+}
